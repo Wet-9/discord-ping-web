@@ -17,7 +17,10 @@ CHANNEL_IDS = {
 TARGET_TITLES = [
     "Pokémon TCG: Scarlet & Violet",
     "Pokemon Trading Card Games Scarlet Violet",
-    "Pokémon Mega Evolution"
+    "Pokémon Mega Evolution",
+    "Pokémon TCG: Mega Evolution— Ascended Heroes Elite Trainer Box",
+    "Ascended Heroes",
+    "Pokémon TCG: Mega Evolution—Ascended Heroes Mini Tin - 10Ct Display"
 ]
 
 client = discord.Client()
