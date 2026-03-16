@@ -13,25 +13,38 @@ CHANNEL_IDS = {
     if cid.strip()
 }
 
+# Target product titles to watch for
+TARGET_TITLES = [
+    "Pokémon TCG: Scarlet & Violet",
+    "Pokemon Trading Card Games Scarlet Violet",
+    "Pokémon Mega Evolution"
+]
+
 client = discord.Client()
 
 
-def extract_pokemon_center_url(embed: discord.Embed) -> str | None:
+def extract_walmart_url(embed: discord.Embed) -> str | None:
     """
-    Check embed for 'Queue' = keyword title and extract the pokemoncenter.com link.
+    Check embed for target Pokémon titles and extract any link.
     """
-    # Must have "Queue" somewhere in the title (case-insensitive)
-    if not embed.title or "queue" not in embed.title.lower():
+    if not embed.title:
+        return None
+
+    # Check if the embed title contains any of the target titles (case-insensitive)
+    title_lower = embed.title.lower()
+    has_target_title = any(target.lower() in title_lower for target in TARGET_TITLES)
+    
+    if not has_target_title:
         return None
 
     # Primary location: embed.url is the hyperlink attached to the title
-    if embed.url and "pokemoncenter.com" in embed.url:
+    if embed.url:
         return embed.url
 
-    # Fallback: scan description for a pokemoncenter.com URL
+    # Fallback: scan description for any URL
     if embed.description:
         match = re.search(
-            r"https?://[^\s<>\"']*pokemoncenter\.com[^\s<>\"']*",
+            r"https?://[^\s<>\"']+",
             embed.description,
         )
         if match:
@@ -41,7 +54,7 @@ def extract_pokemon_center_url(embed: discord.Embed) -> str | None:
     for field in embed.fields:
         if field.value:
             match = re.search(
-                r"https?://[^\s<>\"']*pokemoncenter\.com[^\s<>\"']*",
+                r"https?://[^\s<>\"']+",
                 field.value,
             )
             if match:
@@ -53,6 +66,9 @@ def extract_pokemon_center_url(embed: discord.Embed) -> str | None:
 @client.event
 async def on_ready():
     print(f"[+] Logged in as {client.user}")
+    print(f"[+] Watching for Pokémon products on Walmart:")
+    for title in TARGET_TITLES:
+        print(f"    - {title}")
     for cid in CHANNEL_IDS:
         channel = client.get_channel(cid)
         if channel:
@@ -69,9 +85,9 @@ async def on_message(message: discord.Message):
         return
 
     for embed in message.embeds:
-        url = extract_pokemon_center_url(embed)
+        url = extract_walmart_url(embed)
         if url:
-            print(f"[!] Queue Detected — Opening: {url}")
+            print(f"[!] Pokémon Product Detected — Opening: {url}")
             webbrowser.open(url)
             return  # open only once per message
 
