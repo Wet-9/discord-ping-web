@@ -20,10 +20,37 @@ TARGET_TITLES = [
     "Pokémon Mega Evolution",
     "Pokémon TCG: Mega Evolution— Ascended Heroes Elite Trainer Box",
     "Ascended Heroes",
-    "Pokémon TCG: Mega Evolution—Ascended Heroes Mini Tin - 10Ct Display"
+    "Pokémon TCG: Mega Evolution—Ascended Heroes Mini Tin - 10Ct Display",
+    "Pokémon Unova Heavy Hitters Premium Collection",
+    "Pokémon TCG: Mega Charizard X ex Ultra Premium Collection",
+    "Prismatic Evolutions Elite Trainer Box",
+    "Costco - Pokémon",
+    "EB Games - Ascended Heroes"
 ]
 
 client = discord.Client()
+
+
+def extract_url_from_text(text: str) -> str | None:
+    """
+    Check text for target titles and extract any link.
+    """
+    if not text:
+        return None
+
+    # Check if the text contains any of the target titles (case-insensitive)
+    text_lower = text.lower()
+    has_target_title = any(target.lower() in text_lower for target in TARGET_TITLES)
+    
+    if not has_target_title:
+        return None
+
+    # Extract first URL found in the text
+    match = re.search(r"https?://[^\s<>\"']+", text)
+    if match:
+        return match.group(0)
+
+    return None
 
 
 def extract_walmart_url(embed: discord.Embed) -> str | None:
@@ -69,7 +96,7 @@ def extract_walmart_url(embed: discord.Embed) -> str | None:
 @client.event
 async def on_ready():
     print(f"[+] Logged in as {client.user}")
-    print(f"[+] Watching for Pokémon products on Walmart:")
+    print(f"[+] Watching for Pokémon products:")
     for title in TARGET_TITLES:
         print(f"    - {title}")
     for cid in CHANNEL_IDS:
@@ -87,10 +114,19 @@ async def on_message(message: discord.Message):
     if message.channel.id not in CHANNEL_IDS:
         return
 
+    # First check regular message content (for non-embed messages)
+    if message.content:
+        url = extract_url_from_text(message.content)
+        if url:
+            print(f"[!] Pokémon Product Detected in message — Opening: {url}")
+            webbrowser.open(url)
+            return  # open only once per message
+
+    # Then check embeds (for webhook messages)
     for embed in message.embeds:
         url = extract_walmart_url(embed)
         if url:
-            print(f"[!] Pokémon Product Detected — Opening: {url}")
+            print(f"[!] Pokémon Product Detected in embed — Opening: {url}")
             webbrowser.open(url)
             return  # open only once per message
 
