@@ -1,12 +1,12 @@
-# Discord Ping v2
+# Discord Server Drop - Ping
 
-Monitors a Discord channel for webhook alerts containing a **"Queue Detected"** embed and instantly opens the embedded `pokemoncenter.com` link in your default browser.
+Monitors a Discord channel for webhook alerts containing keywords like: **"Queue Detected"** embed and instantly opens the embedded `pokemoncenter.com` link in your default browser. (Safe to use!)
 
 ## How it works
 
 - Logs into Discord using your personal user token
-- Watches a single configured channel
-- When a message arrives with an embed whose title contains `"queue"` and whose URL points to `pokemoncenter.com`, it opens the link immediately
+- Watches configured channels
+- When a message arrives with chosen key words, it opens the link immediately
 
 ## Requirements
 
@@ -33,14 +33,15 @@ Copy the example and fill in your credentials:
 ### 3. Run
 
 ```bash
-python3 ping.py
+python3 pokeping.py
 ```
 
-## Disclaimer
-
-Self-botting (automating a personal Discord account) violates Discord's Terms of Service. Use at your own risk — a secondary account is recommended.
+- pokeping.py - pokemoncenter + other stores
+- ping.py - specifically pokemoncenter (only looks for the word "queue" to prevent multiple browser spam when products are announced)
+- walmart.py - specifically for stores (walmart, ebgames, costco anything)
 
 ## Future Roadmap
 
 - Add more sites
 - Sync with user roles
+- Better search
